@@ -1,0 +1,81 @@
+package com.indeed;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+/** Class to help take a list of strings, and to produce a set of
+* refinements. A Refinement is a label and the number of times it
+* occurred. So a set of refinements is really just a list of each
+* unique label and the number of times it occurred. Sets of refinements
+* are always sorted by the number of times each label occurred in the
+* original list.
+*/
+public class Refinements {
+    public class Refinement {
+        private final String label;
+        private Integer count;
+
+        public Refinement(String label, Integer count) {
+        this.label = label;
+        this.count = count;
+        }
+
+        public String getLabel() {
+        return label;
+        }
+
+        public Integer getCount() {
+        return count;
+        }
+
+        public void setCount(Integer count) {
+        this.count = count;
+        }
+    }
+
+    private final LinkedList<Refinement> refinements;
+    public Refinements() {
+        refinements = new LinkedList<Refinement>();
+    }
+
+    public final List<Refinement> getRefinements() {
+        return refinements;
+    }
+
+    private void sortRefinements() {
+        // sort by count desc, then by label asc
+        Collections.sort(refinements,
+            new Comparator<Refinement>() {
+                public int compare(Refinement r1, Refinement r2) {
+                    if (r1.count < r2.count) {
+                        return -1;
+                    } else if (r1.count > r2.count)
+                        return 1;
+
+                    return r1.label.compareTo(r2.label);
+                }
+             });
+    }
+
+    public static Refinements createRefinements(List<String> labels) {
+        Refinements refs = new Refinements();
+
+    // use HashMap to quickly find the Refinement objects already created when incrementing
+        HashMap<String, Refinement> refMap = new HashMap<String, Refinement>();
+        for (String label : labels) {
+            if (refMap.get(label) == null) {
+                refMap.put(label, refs.new Refinement(label, 1));
+            }
+            Refinement ref = refMap.get(label);
+            ref.setCount(ref.getCount() + 1);
+        }
+
+        refs.refinements.addAll(refMap.values());
+        refs.sortRefinements();
+        return refs;
+
+    }
+}
